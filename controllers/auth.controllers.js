@@ -1,6 +1,7 @@
 import User from "../models/user.models.js";
 import bcrypt from 'bcryptjs';
 import { generateTokenAndSetCookie } from "../utils/generate.token.js";
+import { removeSession } from "../utils/active.sessions.js";
 
 export const register = async (req, res) => {
   const { fullName, username, email, password } = req.body;
@@ -35,5 +36,18 @@ export const login = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const logout = async (req, res) => {
+  const { id } = req.user;
+
+  try {
+    removeSession(id);
+    res.clearCookie('user');
+    return res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: "Server error during logout" });
   }
 };
